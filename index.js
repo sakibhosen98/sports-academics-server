@@ -25,17 +25,49 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    const instructorsCollection = client.db("academiesDB").collection("instructors");
+    const classesCollection = client.db("academiesDB").collection("classes");
+    const usersCollection = client.db("academiesDB").collection("users");
+
+
+    // users related apis
+    app.get('/users', async(req, res) => {
+      const result = await usersCollection.find().toArray();
+      res.send(result);
+    })
+    app.post('/users', async(req, res) => {
+      const user = req.body;
+      console.log(user)
+      const query = {email: user.email}
+      const existingUser = await usersCollection.findOne(query);
+      console.log('existingUser', existingUser)
+      if(existingUser){
+        return res.send({message: 'user already exists'})
+      }
+      const result = await usersCollection.insertOne(user);
+      res.send(result);
+    })
 
     // instructions
-    app.post('/instructors', async(req, res) => {
+    app.post('/classes', async(req, res) => {
       const instructor = req.body;
       console.log(instructor);
-      const result = await instructorsCollection.insertOne(instructor);
+      const result = await classesCollection.insertOne(instructor);
       res.send(result);
     })
 
 
+    // classes get method
+    app.get('/classes', async(req, res) => {
+      const result = await classesCollection.find().toArray();
+      res.send(result);
+    })
+
+    app.get('/classes/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = { _id: new Object(id)}
+      const result = await classesCollection.findOne(query);
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
