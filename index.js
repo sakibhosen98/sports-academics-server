@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 
@@ -23,11 +24,20 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
 
     const classesCollection = client.db("academiesDB").collection("classes");
     const usersCollection = client.db("academiesDB").collection("users");
 
+    // console.log(process.env.ACCESS_TOKEN_SECRET)
+
+    // jwt
+    app.post('jwt', (req, res) => {
+      const user = req.body;
+      console.log(user)
+      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
+
+      res.send({token})
+    })
 
     // users related apis
     app.get('/users', async(req, res) => {
