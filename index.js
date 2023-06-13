@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken')
 require('dotenv').config()
 const port = process.env.PORT || 5000;
 
@@ -31,7 +31,7 @@ async function run() {
     // console.log(process.env.ACCESS_TOKEN_SECRET)
 
     // jwt
-    app.post('jwt', (req, res) => {
+    app.post('/jwt', (req, res) => {
       const user = req.body;
       console.log(user)
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '1h'})
@@ -45,6 +45,22 @@ async function run() {
       res.send(result);
     })
 
+
+    // find user roll by email api
+    app.get('/users/admin/:email', async(req, res) => {
+      const email = req.params.email;
+      const query = {email: email}
+      console.log(query);
+      const user = await usersCollection.findOne(query)
+      if(user){
+        const role  = user.role;
+        const isAdmin = role === 'admin';
+        const isInstructor = role === 'instructor';
+        const isUser = role === 'User';
+      }
+      console.log(user)
+    })
+
     app.post('/users', async(req, res) => {
       const user = req.body;
       console.log(user)
@@ -56,6 +72,52 @@ async function run() {
       }
       const result = await usersCollection.insertOne(user);
       res.send(result);
+    })
+
+    // manage classes peanding, approve, deny
+    app.patch('/classes/pending/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          role: 'pending'
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+    
+    app.patch('/classes/approved/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          role: 'approved'
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+
+    app.patch('/classes/deny/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id)
+      const filter = {_id: new ObjectId(id)};
+      const updateDoc = {
+        $set: {
+          role: 'deny'
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
     })
 
     // make admin
