@@ -26,6 +26,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
 
     const classesCollection = client.db("academiesDB").collection("classes");
+    const myClassesCollection = client.db("academiesDB").collection("myClasses");
     const usersCollection = client.db("academiesDB").collection("users");
 
     // console.log(process.env.ACCESS_TOKEN_SECRET)
@@ -89,7 +90,7 @@ async function run() {
       res.send(result);
 
     })
-    
+
     app.patch('/classes/approved/:id', async (req, res) => {
       const id = req.params.id;
       console.log(id)
@@ -181,6 +182,23 @@ async function run() {
       const result = await classesCollection.findOne(query);
       res.send(result)
     })
+
+
+    // myClass
+    app.post('/myClasses', async(req, res) => {
+      const instructor = req.body;
+      console.log(instructor);
+      const result = await myClassesCollection.insertOne(instructor);
+      res.send(result);
+    })
+
+
+    // classes get method
+    app.get('/myClasses', async(req, res) => {
+      const result = await myClassesCollection.find().toArray();
+      res.send(result);
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
