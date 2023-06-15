@@ -80,16 +80,18 @@ async function run() {
     app.get('/users/admin/:email', async(req, res) => {
       const email = req.params.email;
       const query = {email: email}
-      console.log(query);
+      // console.log(query);
       const user = await usersCollection.findOne(query)
       if(user){
         const role  = user.role;
         const isAdmin = role === 'admin';
         const isInstructor = role === 'instructor';
-        const isUser = role === 'User';
+        const isUser = role === 'user';
       }
-      console.log(user)
+      // console.log('admin user', user)
+      res.send(user)
     })
+
 
     app.post('/users', async(req, res) => {
       const user = req.body;
@@ -218,8 +220,6 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
-    // Ensures that the client will close when you finish/error
-    // await client.close();
   }
 }
 run().catch(console.dir);
