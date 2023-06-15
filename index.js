@@ -121,7 +121,7 @@ async function run() {
       res.send(result);
 
     })
-
+    // manage classes deny method
     app.patch('/classes/deny/:id', async (req, res) => {
       const id = req.params.id;
       console.log(id)
