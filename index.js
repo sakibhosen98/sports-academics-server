@@ -177,7 +177,7 @@ async function run() {
         res.send(result);
       })
 
-    // instructions
+    // instructions data post method
     app.post('/classes', async(req, res) => {
       const instructor = req.body;
       console.log(instructor);
@@ -186,7 +186,7 @@ async function run() {
     })
 
 
-    // classes get method
+    // classes data get method
     app.get('/classes', async(req, res) => {
       const result = await classesCollection.find().toArray();
       res.send(result);
